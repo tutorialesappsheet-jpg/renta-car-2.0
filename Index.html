@@ -49,6 +49,14 @@
 
     <!-- Main Content -->
     <main class="main-content">
+      <section id="featured-slider-section" class="featured-slider-section hidden">
+                <div class="slider-container">
+                    <div id="slider" class="slider">
+                        </div>
+                    <button class="slider-btn prev" id="slider-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="slider-btn next" id="slider-next"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </section>
         <div class="container">
             <!-- Hero Section -->
             <section class="hero">
@@ -56,39 +64,28 @@
                 <p>Consulta la disponibilidad y solicita tu reserva de manera fácil y rápida</p>
             </section>
 
-            <!-- Search Panel -->
             <section class="search-panel">
                 <div class="search-form">
                     <div class="form-group">
-                        <label for="fecha-inicio">
-                            <i class="fas fa-calendar-alt"></i>
-                            Fecha de inicio
-                        </label>
+                        <label for="fecha-inicio"><i class="fas fa-calendar-alt"></i> Fecha de inicio</label>
                         <input type="date" id="fecha-inicio" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="fecha-fin">
-                            <i class="fas fa-calendar-alt"></i>
-                            Fecha de regreso
-                        </label>
+                        <label for="fecha-fin"><i class="fas fa-calendar-alt"></i> Fecha de regreso</label>
                         <input type="date" id="fecha-fin" required>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="tipo-vehiculo">
-                            <i class="fas fa-car"></i>
-                            Tipo de vehículo
-                        </label>
-                        <select id="tipo-vehiculo">
-                            <option value="TODOS">Todos los tipos</option>
-                        </select>
+                    <div class="form-group vehicle-type-group">
+                        <label><i class="fas fa-car"></i> Tipo de vehículo</label>
+                        <div id="tipo-vehiculo-btns" class="type-buttons">
+                            <button class="type-btn active" data-type="TODOS">Todos</button>
+                            </div>
                     </div>
                     
-                    <button id="btn-buscar" class="btn-search">
-                        <i class="fas fa-search"></i>
-                        Buscar Vehículos
-                    </button>
+                    <div class="form-group-btn">
+                      <button id="btn-buscar" class="btn-search"><i class="fas fa-search"></i> Buscar</button>
+                    </div>
                 </div>
             </section>
 
@@ -201,7 +198,7 @@
                     <h4>
                         <i class="fas fa-paper-plane"></i>
                         Solicitar Reserva
-                    </h4>
+                    <h4><i class="fas fa-paper-plane"></i> Completa tus Datos para Reservar</h4>
                     <form id="reservation-form">
                         <div class="form-row">
                             <div class="form-group">
@@ -335,11 +332,81 @@
             initializeApp();
         });
 
-        function initializeApp() {
-            loadVehicleTypes();
+function initializeApp() {
+            // Esta función ahora llama a 'getInitialData' que trae todo lo necesario.
+            google.script.run
+                .withSuccessHandler(setupPage)
+                .withFailureHandler(handleInitError)
+                .getInitialData();
+            
+            // Mantenemos tus funciones originales de configuración.
             setupEventListeners();
             setDefaultDates();
             setupDateValidation();
+        }
+
+
+        function setupPage(data) {
+            console.log('Datos iniciales recibidos:', data);
+            // Configurar slider de destacados
+            if (data.featuredVehicles && data.featuredVehicles.length > 0) {
+                populateFeaturedSlider(data.featuredVehicles);
+                document.getElementById('featured-slider-section').classList.remove('hidden');
+                setupSlider();
+            }
+            // Configurar botones de tipo
+            if (data.vehicleTypes && data.vehicleTypes.length > 0) {
+                populateVehicleTypeButtons(data.vehicleTypes);
+            }
+        }
+        
+        function handleInitError(error) {
+            console.error('Error al inicializar la página:', error);
+            showError('No se pudo cargar la configuración inicial de la aplicación.');
+        }
+
+        function populateFeaturedSlider(vehicles) {
+            const slider = document.getElementById('slider');
+            slider.innerHTML = '';
+            vehicles.forEach(v => {
+                const price = v.TARIFA ? `$${parseFloat(v.TARIFA).toFixed(2)}` : 'Consultar';
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.innerHTML = `
+                    <img src="${v.IMAGEN_URL}" alt="${v.NOMBRE}">
+                    <div class="slide-caption">
+                        <h3>${v.NOMBRE}</h3>
+                        <p>${v.TIPO} &bull; ${price} por día</p>
+                    </div>`;
+                slider.appendChild(slide);
+            });
+        }
+
+        function setupSlider() {
+            const slider = document.getElementById('slider');
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('slider-prev');
+            const nextBtn = document.getElementById('slider-next');
+            if (slides.length <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                return;
+            }
+            let currentIndex = 0;
+            let intervalId = null;
+
+            function goToSlide(index) {
+                currentIndex = (index + slides.length) % slides.length;
+                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
+            const next = () => goToSlide(currentIndex + 1);
+            const prev = () => goToSlide(currentIndex - 1);
+            const startInterval = () => { intervalId = setInterval(next, 5000); } // Cambia cada 5 segundos
+            const resetInterval = () => { clearInterval(intervalId); startInterval(); }
+            
+            prevBtn.addEventListener('click', () => { prev(); resetInterval(); });
+            nextBtn.addEventListener('click', () => { next(); resetInterval(); });
+            startInterval();
         }
 
         function setDefaultDates() {
@@ -394,37 +461,20 @@
             });
         }
 
-        function loadVehicleTypes() {
-            console.log('Cargando tipos de vehículos...');
-            google.script.run
-                .withSuccessHandler(function(types) {
-                    console.log('Tipos de vehículos cargados:', types);
-                    vehicleTypes = types;
-                    populateVehicleTypeSelect();
-                })
-                .withFailureHandler(function(error) {
-                    console.error('Error cargando tipos de vehículos:', error);
-                    showError('Error cargando tipos de vehículos');
-                    // Cargar tipos por defecto
-                    vehicleTypes = ['SEDAN', 'PICK UP', 'SUV'];
-                    populateVehicleTypeSelect();
-                })
-                .getVehicleTypes();
-        }
-
-        function populateVehicleTypeSelect() {
-            const select = document.getElementById('tipo-vehiculo');
-            
-            // Limpiar opciones existentes (excepto "Todos")
-            while (select.children.length > 1) {
-                select.removeChild(select.lastChild);
-            }
-            
-            vehicleTypes.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                select.appendChild(option);
+function populateVehicleTypeButtons(types) {
+            const container = document.getElementById('tipo-vehiculo-btns');
+            types.forEach(type => {
+                const btn = document.createElement('button');
+                btn.className = 'type-btn';
+                btn.dataset.type = type;
+                btn.textContent = type;
+                container.appendChild(btn);
+            });
+            container.addEventListener('click', e => {
+                if (e.target.classList.contains('type-btn')) {
+                    container.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                }
             });
         }
 
@@ -457,59 +507,24 @@
             });
         }
 
-        function searchVehicles() {
+ function searchVehicles() {
             const startDate = document.getElementById('fecha-inicio').value;
             const endDate = document.getElementById('fecha-fin').value;
-            const vehicleType = document.getElementById('tipo-vehiculo').value;
-
-            if (!startDate || !endDate) {
-                showError('Por favor selecciona ambas fechas');
-                return;
-            }
-
-            // Validar que las fechas sean válidas
-            const start = new Date(startDate);
-            const end = new Date(endDate);
+            const selectedTypeBtn = document.querySelector('#tipo-vehiculo-btns .type-btn.active');
+            const vehicleType = selectedTypeBtn ? selectedTypeBtn.dataset.type : 'TODOS';
             
-            if (start >= end) {
-                showError('La fecha de regreso debe ser posterior a la fecha de inicio');
+            if (!startDate || !endDate || new Date(endDate) <= new Date(startDate)) {
+                showError('Por favor, selecciona un rango de fechas válido.');
                 return;
             }
-
             currentStartDate = startDate;
             currentEndDate = endDate;
-
-            console.log('Iniciando búsqueda:', { startDate, endDate, vehicleType });
             
             showLoading();
             hideResults();
 
-            // Buscar vehículos disponibles
-            google.script.run
-                .withSuccessHandler(function(vehicles) {
-                    console.log('Vehículos disponibles recibidos:', vehicles.length);
-                    displayAvailableVehicles(vehicles);
-                    
-                    // Buscar vehículos pronto disponibles
-                    google.script.run
-                        .withSuccessHandler(function(soonVehicles) {
-                            console.log('Vehículos pronto disponibles:', soonVehicles.length);
-                            displaySoonAvailableVehicles(soonVehicles);
-                            hideLoading();
-                        })
-                        .withFailureHandler(function(error) {
-                            console.error('Error buscando vehículos pronto disponibles:', error);
-                            displaySoonAvailableVehicles([]);
-                            hideLoading();
-                        })
-                        .getSoonToBeAvailableVehicles(endDate);
-                })
-                .withFailureHandler(function(error) {
-                    console.error('Error buscando vehículos:', error);
-                    showError('Error al buscar vehículos disponibles. Por favor intenta nuevamente.');
-                    hideLoading();
-                })
-                .getAvailableVehicles(startDate, endDate, vehicleType);
+            google.script.run.withSuccessHandler(displayAvailableVehicles).withFailureHandler(handleSearchError).getAvailableVehicles(startDate, endDate, vehicleType);
+            google.script.run.withSuccessHandler(displaySoonAvailableVehicles).withFailureHandler(handleSearchError).getSoonToBeAvailableVehicles(endDate);
         }
 
         function showLoading() {
@@ -567,15 +582,11 @@
         function createVehicleCard(vehicle, isSoon = false) {
             const card = document.createElement('div');
             card.className = 'vehicle-card';
-            if (isSoon) {
-                card.classList.add('soon-available');
-            }
-
+            if (isSoon) card.classList.add('soon-available');
             const imageUrl = vehicle.IMAGEN_URL || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
             const price = vehicle.TARIFA ? `$${parseFloat(vehicle.TARIFA).toFixed(2)}` : 'Consultar precio';
             const year = vehicle['AÑO'] || vehicle.ANO || '';
-            const color = vehicle.COLOR || '';
-
+            
             card.innerHTML = `
                 <div class="vehicle-image">
                     <img src="${imageUrl}" alt="${vehicle.NOMBRE}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
@@ -584,26 +595,53 @@
                 <div class="vehicle-info">
                     <h4 class="vehicle-name">${vehicle.NOMBRE}</h4>
                     <div class="vehicle-meta">
-                        <div class="vehicle-type">
-                            <i class="fas fa-tag"></i>
-                            ${vehicle.TIPO}
-                        </div>
+                        <div class="vehicle-type"><i class="fas fa-tag"></i> ${vehicle.TIPO}</div>
                         ${year ? `<div class="vehicle-year"><i class="fas fa-calendar-alt"></i> ${year}</div>` : ''}
-                        ${color ? `<div class="vehicle-color"><i class="fas fa-palette"></i> ${color}</div>` : ''}
                     </div>
                     <div class="vehicle-price">
                         <span class="price">${price}</span>
                         <span class="price-period">por día</span>
                     </div>
-                    <button class="btn-details" onclick="openVehicleModal('${vehicle.COD}', ${JSON.stringify(vehicle).replace(/"/g, '&quot;')})">
-                        <i class="fas fa-eye"></i>
-                        Ver detalles y reservar
+                    <button class="btn-details" onclick='openVehicleModal(${JSON.stringify(vehicle).replace(/"/g, "&quot;")})'>
+                        <i class="fas fa-eye"></i> Ver detalles
                     </button>
-                </div>
-            `;
-
+                </div>`;
             return card;
         }
+
+        function loadVehicleTypes() {
+
+console.log('Cargando tipos de vehículos...');
+
+google.script.run
+
+.withSuccessHandler(function(types) {
+
+console.log('Tipos de vehículos cargados:', types);
+
+vehicleTypes = types;
+
+populateVehicleTypeSelect();
+
+})
+
+.withFailureHandler(function(error) {
+
+console.error('Error cargando tipos de vehículos:', error);
+
+showError('Error cargando tipos de vehículos');
+
+// Cargar tipos por defecto
+
+vehicleTypes = ['SEDAN', 'PICK UP', 'SUV'];
+
+populateVehicleTypeSelect();
+
+})
+
+.getVehicleTypes();
+
+}
 
         function openVehicleModal(cod, vehicleData) {
             console.log('Abriendo modal para vehículo:', cod);

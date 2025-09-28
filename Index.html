@@ -5,14 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Renta de Vehículos</title>
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Incluir CSS -->
-    <?!= include('CSS'); ?>
+   <link rel="stylesheet" href="styles.css">
     
     <style>
         :root {
@@ -22,16 +19,10 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
-                    <? if (empresa.LOGO_URL) { ?>
-                        <img src="<?= empresa.LOGO_URL ?>" alt="<?= empresa.NOMBRE ?>" class="logo">
-                    <? } else { ?>
-                        <i class="fas fa-car logo-icon"></i>
-                    <? } ?>
                     <div class="company-info">
                         <h1 class="company-name"><?= empresa.NOMBRE || 'Renta de Vehículos' ?></h1>
                         <p class="company-address"><?= empresa.DIRECCION || 'Dirección no disponible' ?></p>
@@ -47,18 +38,14 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="main-content">
-      <section id="featured-slider-section" class="featured-slider-section hidden">
-                <div class="slider-container">
-                    <div id="slider" class="slider">
-                        </div>
-                    <button class="slider-btn prev" id="slider-prev"><i class="fas fa-chevron-left"></i></button>
-                    <button class="slider-btn next" id="slider-next"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </section>
         <div class="container">
-            <!-- Hero Section -->
+            <section id="featured-section" class="vehicles-section hidden">
+                <h3><i class="fas fa-star"></i> Vehículos Destacados</h3>
+                <div id="featured-grid" class="vehicles-grid">
+                    </div>
+            </section>
+            
             <section class="hero">
                 <h2>Encuentra tu vehículo ideal</h2>
                 <p>Consulta la disponibilidad y solicita tu reserva de manera fácil y rápida</p>
@@ -70,204 +57,104 @@
                         <label for="fecha-inicio"><i class="fas fa-calendar-alt"></i> Fecha de inicio</label>
                         <input type="date" id="fecha-inicio" required>
                     </div>
-                    
                     <div class="form-group">
                         <label for="fecha-fin"><i class="fas fa-calendar-alt"></i> Fecha de regreso</label>
                         <input type="date" id="fecha-fin" required>
                     </div>
-                    
                     <div class="form-group vehicle-type-group">
                         <label><i class="fas fa-car"></i> Tipo de vehículo</label>
                         <div id="tipo-vehiculo-btns" class="type-buttons">
                             <button class="type-btn active" data-type="TODOS">Todos</button>
-                            </div>
+                        </div>
                     </div>
-                    
                     <div class="form-group-btn">
                       <button id="btn-buscar" class="btn-search"><i class="fas fa-search"></i> Buscar</button>
                     </div>
                 </div>
             </section>
 
-            <!-- Loading Indicator -->
             <div id="loading" class="loading hidden">
                 <div class="spinner"></div>
                 <p>Buscando vehículos disponibles...</p>
             </div>
 
-            <!-- Results Section -->
-            <section class="results-section">
-                <!-- Available Vehicles -->
+            <section id="results-section" class="results-section hidden">
                 <div id="available-vehicles" class="vehicles-section hidden">
-                    <h3>
-                        <i class="fas fa-check-circle"></i>
-                        Vehículos Disponibles
-                    </h3>
+                    <h3><i class="fas fa-check-circle"></i> Vehículos Disponibles</h3>
                     <div id="available-grid" class="vehicles-grid"></div>
                 </div>
 
-                <!-- Soon Available Vehicles -->
                 <div id="soon-available-vehicles" class="vehicles-section hidden">
-                    <h3>
-                        <i class="fas fa-clock"></i>
-                        Disponibles Próximamente
-                    </h3>
-                    <p class="soon-available-note">
-                        Estos vehículos se liberarán en los próximos 5 días después de tu fecha de regreso
-                    </p>
+                    <h3><i class="fas fa-clock"></i> Disponibles Próximamente</h3>
+                    <p class="soon-available-note">Estos vehículos se liberarán en los próximos 5 días después de tu fecha de regreso.</p>
                     <div id="soon-available-grid" class="vehicles-grid"></div>
                 </div>
 
-                <!-- No Results -->
                 <div id="no-results" class="no-results hidden">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-exclamation-circle"></i>
                     <h3>No se encontraron vehículos</h3>
-                    <p>No hay vehículos disponibles para las fechas seleccionadas. Intenta con otras fechas o revisa los vehículos que se liberarán próximamente.</p>
+                    <p>No hay vehículos que coincidan con tu búsqueda. Intenta con otras fechas.</p>
                 </div>
             </section>
         </div>
     </main>
 
-    <!-- Vehicle Modal -->
     <div id="vehicle-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modal-vehicle-name"></h3>
-                <button id="modal-close" class="modal-close">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button id="modal-close" class="modal-close"><i class="fas fa-times"></i></button>
             </div>
-            
             <div class="modal-body">
                 <div class="vehicle-details">
                     <div class="vehicle-gallery">
-                        <div id="main-image-container">
-                            <img id="modal-main-image" src="" alt="" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+Imagen'">
-                        </div>
+                        <div id="main-image-container"><img id="modal-main-image" src="" alt="Imagen principal del vehículo"></div>
                         <div id="gallery-thumbs" class="gallery-thumbs"></div>
                     </div>
-                    
                     <div class="vehicle-info">
                         <div class="price-info">
                             <span class="price" id="modal-vehicle-price">$0.00</span>
                             <span class="price-period">por día</span>
                         </div>
-                        
                         <div class="vehicle-details-grid">
-                            <div class="detail-item">
-                                <i class="fas fa-tag"></i>
-                                <span class="detail-label">Tipo:</span>
-                                <span id="modal-vehicle-type">-</span>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span class="detail-label">Año:</span>
-                                <span id="modal-vehicle-year">-</span>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <i class="fas fa-palette"></i>
-                                <span class="detail-label">Color:</span>
-                                <span id="modal-vehicle-color">-</span>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <i class="fas fa-building"></i>
-                                <span class="detail-label">Marca:</span>
-                                <span id="modal-vehicle-marca">-</span>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <i class="fas fa-id-badge"></i>
-                                <span class="detail-label">Placa:</span>
-                                <span id="modal-vehicle-placa">-</span>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <i class="fas fa-shield-alt"></i>
-                                <span class="detail-label">Deducible:</span>
-                                <span id="modal-vehicle-deducible">-</span>
-                            </div>
+                            <div class="detail-item"><i class="fas fa-tag"></i><span class="detail-label">Tipo:</span> <span id="modal-vehicle-type">-</span></div>
+                            <div class="detail-item"><i class="fas fa-calendar-alt"></i><span class="detail-label">Año:</span> <span id="modal-vehicle-year">-</span></div>
+                            <div class="detail-item"><i class="fas fa-palette"></i><span class="detail-label">Color:</span> <span id="modal-vehicle-color">-</span></div>
+                            <div class="detail-item"><i class="fas fa-building"></i><span class="detail-label">Marca:</span> <span id="modal-vehicle-marca">-</span></div>
+                            <div class="detail-item"><i class="fas fa-shield-alt"></i><span class="detail-label">Deducible:</span> <span id="modal-vehicle-deducible">-</span></div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Reservation Form -->
                 <div class="reservation-form">
-                    <h4>
-                        <i class="fas fa-paper-plane"></i>
-                        Solicitar Reserva
                     <h4><i class="fas fa-paper-plane"></i> Completa tus Datos para Reservar</h4>
                     <form id="reservation-form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="cliente-nombre">
-                                    <i class="fas fa-user"></i>
-                                    Nombre completo *
-                                </label>
-                                <input type="text" id="cliente-nombre" required placeholder="Ingresa tu nombre completo">
+                                <label for="cliente-nombre"><i class="fas fa-user"></i> Nombre completo *</label>
+                                <input type="text" id="cliente-nombre" required placeholder="Ingresa tu nombre">
                             </div>
-                            
                             <div class="form-group">
-                                <label for="cliente-telefono">
-                                    <i class="fas fa-phone"></i>
-                                    Teléfono *
-                                </label>
-                                <input type="tel" id="cliente-telefono" required placeholder="Ej: +503 1234-5678">
+                                <label for="cliente-telefono"><i class="fas fa-phone"></i> Teléfono *</label>
+                                <input type="tel" id="cliente-telefono" required placeholder="Tu número de teléfono">
                             </div>
                         </div>
-                        
                         <div class="form-group">
-                            <label for="cliente-licencia">
-                                <i class="fas fa-id-card"></i>
-                                Número de licencia *
-                            </label>
-                            <input type="text" id="cliente-licencia" required placeholder="Ingresa tu número de licencia">
+                            <label for="cliente-licencia"><i class="fas fa-id-card"></i> Número de licencia *</label>
+                            <input type="text" id="cliente-licencia" required placeholder="Tu número de licencia">
                         </div>
-                        
                         <div class="form-group">
-                            <label for="cliente-comentarios">
-                                <i class="fas fa-comment"></i>
-                                Comentarios adicionales
-                            </label>
-                            <textarea id="cliente-comentarios" rows="3" placeholder="Comentarios o solicitudes especiales (opcional)"></textarea>
+                            <label for="cliente-comentarios"><i class="fas fa-comment"></i> Comentarios adicionales</label>
+                            <textarea id="cliente-comentarios" rows="3" placeholder="Solicitudes especiales (opcional)"></textarea>
                         </div>
-                        
                         <div class="reservation-summary">
-                            <h5>
-                                <i class="fas fa-file-invoice"></i>
-                                Resumen de la reserva
-                            </h5>
-                            <div class="summary-item">
-                                <span>Vehículo:</span>
-                                <span id="summary-vehicle">-</span>
-                            </div>
-                            <div class="summary-item">
-                                <span>Fecha de inicio:</span>
-                                <span id="summary-start-date">-</span>
-                            </div>
-                            <div class="summary-item">
-                                <span>Fecha de regreso:</span>
-                                <span id="summary-end-date">-</span>
-                            </div>
-                            <div class="summary-item">
-                                <span>Días totales:</span>
-                                <span id="summary-days">-</span>
-                            </div>
-                            <div class="summary-item total">
-                                <span>Total estimado:</span>
-                                <span id="summary-total">-</span>
-                            </div>
-                            <div class="summary-note">
-                                <small><i class="fas fa-info-circle"></i> Este es un cálculo estimado. El precio final será confirmado al procesar tu solicitud.</small>
-                            </div>
+                            <h5><i class="fas fa-file-invoice"></i> Resumen de la reserva</h5>
+                            <div class="summary-item"><span>Vehículo:</span> <span id="summary-vehicle">-</span></div>
+                            <div class="summary-item"><span>Desde:</span> <span id="summary-start-date">-</span></div>
+                            <div class="summary-item"><span>Hasta:</span> <span id="summary-end-date">-</span></div>
+                            <div class="summary-item"><span>Días:</span> <span id="summary-days">-</span></div>
+                            <div class="summary-item total"><span>Total estimado:</span> <span id="summary-total">-</span></div>
                         </div>
-                        
-                        <button type="submit" class="btn-reserve">
-                            <i class="fas fa-paper-plane"></i>
-                            Enviar Solicitud de Reserva
-                        </button>
+                        <button type="submit" class="btn-reserve"><i class="fas fa-paper-plane"></i> Enviar Solicitud</button>
                     </form>
                 </div>
             </div>
@@ -275,193 +162,69 @@
         <div class="modal-backdrop"></div>
     </div>
 
-    <!-- Success Modal -->
     <div id="success-modal" class="modal hidden">
         <div class="modal-content success-modal">
-            <div class="success-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h3>¡Solicitud Enviada Exitosamente!</h3>
-            <p>Tu solicitud de reserva ha sido recibida y procesada. Nos pondremos en contacto contigo pronto para confirmar los detalles.</p>
-            <div class="reservation-id">
-                <span>ID de solicitud: </span>
-                <span id="reservation-id"></span>
-            </div>
-            <div class="contact-info-modal">
-                <p>Puedes contactarnos al:</p>
-                <a href="tel:<?= empresa.TELEFONO ?>" class="contact-link">
-                    <i class="fas fa-phone"></i>
-                    <?= empresa.TELEFONO ?>
-                </a>
-            </div>
-            <button id="success-close" class="btn-primary">
-                <i class="fas fa-check"></i>
-                Entendido
-            </button>
+            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+            <h3>¡Solicitud Enviada!</h3>
+            <p>Hemos recibido tu solicitud. Nos pondremos en contacto contigo pronto para confirmar.</p>
+            <div class="reservation-id"><span>ID de solicitud: </span> <span id="reservation-id"></span></div>
+            <button id="success-close" class="btn-primary"><i class="fas fa-check"></i> Entendido</button>
         </div>
         <div class="modal-backdrop"></div>
     </div>
-
-    <!-- Error Modal -->
     <div id="error-modal" class="modal hidden">
         <div class="modal-content error-modal">
-            <div class="error-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
+            <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
             <h3>Error</h3>
             <p id="error-message">Ha ocurrido un error. Por favor intenta nuevamente.</p>
-            <button id="error-close" class="btn-secondary">
-                <i class="fas fa-times"></i>
-                Cerrar
-            </button>
+            <button id="error-close" class="btn-secondary"><i class="fas fa-times"></i> Cerrar</button>
         </div>
         <div class="modal-backdrop"></div>
     </div>
 
-    <!-- JavaScript -->
     <script>
         // Variables globales
-        let vehicleTypes = [];
         let currentVehicle = null;
         let currentStartDate = null;
         let currentEndDate = null;
 
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Inicializando aplicación...');
-            initializeApp();
-        });
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
-function initializeApp() {
-            // Esta función ahora llama a 'getInitialData' que trae todo lo necesario.
+        function initializeApp() {
             google.script.run
                 .withSuccessHandler(setupPage)
                 .withFailureHandler(handleInitError)
                 .getInitialData();
-            
-            // Mantenemos tus funciones originales de configuración.
             setupEventListeners();
             setDefaultDates();
             setupDateValidation();
         }
 
-
         function setupPage(data) {
-            console.log('Datos iniciales recibidos:', data);
-            // Configurar slider de destacados
             if (data.featuredVehicles && data.featuredVehicles.length > 0) {
-                populateFeaturedSlider(data.featuredVehicles);
-                document.getElementById('featured-slider-section').classList.remove('hidden');
-                setupSlider();
+                populateFeaturedVehicles(data.featuredVehicles);
             }
-            // Configurar botones de tipo
             if (data.vehicleTypes && data.vehicleTypes.length > 0) {
                 populateVehicleTypeButtons(data.vehicleTypes);
             }
         }
         
         function handleInitError(error) {
-            console.error('Error al inicializar la página:', error);
-            showError('No se pudo cargar la configuración inicial de la aplicación.');
+            console.error('Error al inicializar:', error);
+            showError('No se pudo cargar la configuración inicial.');
         }
 
-        function populateFeaturedSlider(vehicles) {
-            const slider = document.getElementById('slider');
-            slider.innerHTML = '';
-            vehicles.forEach(v => {
-                const price = v.TARIFA ? `$${parseFloat(v.TARIFA).toFixed(2)}` : 'Consultar';
-                const slide = document.createElement('div');
-                slide.className = 'slide';
-                slide.innerHTML = `
-                    <img src="${v.IMAGEN_URL}" alt="${v.NOMBRE}">
-                    <div class="slide-caption">
-                        <h3>${v.NOMBRE}</h3>
-                        <p>${v.TIPO} &bull; ${price} por día</p>
-                    </div>`;
-                slider.appendChild(slide);
+        function populateFeaturedVehicles(vehicles) {
+            const container = document.getElementById('featured-section');
+            const grid = document.getElementById('featured-grid');
+            grid.innerHTML = '';
+            vehicles.forEach(vehicle => {
+                grid.appendChild(createVehicleCard(vehicle, false));
             });
+            container.classList.remove('hidden');
         }
 
-        function setupSlider() {
-            const slider = document.getElementById('slider');
-            const slides = document.querySelectorAll('.slide');
-            const prevBtn = document.getElementById('slider-prev');
-            const nextBtn = document.getElementById('slider-next');
-            if (slides.length <= 1) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-                return;
-            }
-            let currentIndex = 0;
-            let intervalId = null;
-
-            function goToSlide(index) {
-                currentIndex = (index + slides.length) % slides.length;
-                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
-            }
-            const next = () => goToSlide(currentIndex + 1);
-            const prev = () => goToSlide(currentIndex - 1);
-            const startInterval = () => { intervalId = setInterval(next, 5000); } // Cambia cada 5 segundos
-            const resetInterval = () => { clearInterval(intervalId); startInterval(); }
-            
-            prevBtn.addEventListener('click', () => { prev(); resetInterval(); });
-            nextBtn.addEventListener('click', () => { next(); resetInterval(); });
-            startInterval();
-        }
-
-        function setDefaultDates() {
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-
-            document.getElementById('fecha-inicio').value = formatDateForInput(today);
-            document.getElementById('fecha-fin').value = formatDateForInput(tomorrow);
-            
-            // También establecer fechas mínimas
-            document.getElementById('fecha-inicio').min = formatDateForInput(today);
-            document.getElementById('fecha-fin').min = formatDateForInput(tomorrow);
-        }
-
-        function formatDateForInput(date) {
-            return date.toISOString().split('T')[0];
-        }
-
-        function setupDateValidation() {
-            const startInput = document.getElementById('fecha-inicio');
-            const endInput = document.getElementById('fecha-fin');
-            
-            startInput.addEventListener('change', function() {
-                const startDate = new Date(this.value);
-                const endDate = new Date(endInput.value);
-                
-                // Si la fecha de fin es anterior o igual a la de inicio, ajustarla
-                if (endDate <= startDate) {
-                    const newEndDate = new Date(startDate);
-                    newEndDate.setDate(newEndDate.getDate() + 1);
-                    endInput.value = formatDateForInput(newEndDate);
-                }
-                
-                // Actualizar fecha mínima para fecha de fin
-                const minEndDate = new Date(startDate);
-                minEndDate.setDate(minEndDate.getDate() + 1);
-                endInput.min = formatDateForInput(minEndDate);
-            });
-            
-            endInput.addEventListener('change', function() {
-                const startDate = new Date(startInput.value);
-                const endDate = new Date(this.value);
-                
-                // Verificar que la fecha de fin sea posterior a la de inicio
-                if (endDate <= startDate) {
-                    showError('La fecha de regreso debe ser posterior a la fecha de inicio');
-                    const newEndDate = new Date(startDate);
-                    newEndDate.setDate(newEndDate.getDate() + 1);
-                    this.value = formatDateForInput(newEndDate);
-                }
-            });
-        }
-
-function populateVehicleTypeButtons(types) {
+        function populateVehicleTypeButtons(types) {
             const container = document.getElementById('tipo-vehiculo-btns');
             types.forEach(type => {
                 const btn = document.createElement('button');
@@ -477,37 +240,17 @@ function populateVehicleTypeButtons(types) {
                 }
             });
         }
-
         function setupEventListeners() {
-            // Botón de búsqueda
             document.getElementById('btn-buscar').addEventListener('click', searchVehicles);
-
-            // Modal de vehículo
             document.getElementById('modal-close').addEventListener('click', closeVehicleModal);
-
-            // Formulario de reserva
             document.getElementById('reservation-form').addEventListener('submit', submitReservation);
-
-            // Modales
             document.getElementById('success-close').addEventListener('click', closeSuccessModal);
             document.getElementById('error-close').addEventListener('click', closeErrorModal);
-            
-            // Cerrar modales al hacer clic en backdrop
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal-backdrop')) {
-                    closeAllModals();
-                }
-            });
-
-            // Cerrar modales con ESC
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeAllModals();
-                }
-            });
+            document.addEventListener('click', e => { if (e.target.classList.contains('modal-backdrop')) closeAllModals(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
         }
 
- function searchVehicles() {
+        function searchVehicles() {
             const startDate = document.getElementById('fecha-inicio').value;
             const endDate = document.getElementById('fecha-fin').value;
             const selectedTypeBtn = document.querySelector('#tipo-vehiculo-btns .type-btn.active');
@@ -523,171 +266,116 @@ function populateVehicleTypeButtons(types) {
             showLoading();
             hideResults();
 
-            google.script.run.withSuccessHandler(displayAvailableVehicles).withFailureHandler(handleSearchError).getAvailableVehicles(startDate, endDate, vehicleType);
-            google.script.run.withSuccessHandler(displaySoonAvailableVehicles).withFailureHandler(handleSearchError).getSoonToBeAvailableVehicles(endDate);
+            // CORRECCIÓN: Llamada única al backend para la búsqueda
+            google.script.run
+                .withSuccessHandler(displaySearchResults)
+                .withFailureHandler(handleSearchError)
+                .performSearch(startDate, endDate, vehicleType);
         }
 
-        function showLoading() {
-            document.getElementById('loading').classList.remove('hidden');
-        }
-
-        function hideLoading() {
-            document.getElementById('loading').classList.add('hidden');
-        }
-
-        function hideResults() {
-            document.getElementById('available-vehicles').classList.add('hidden');
-            document.getElementById('soon-available-vehicles').classList.add('hidden');
-            document.getElementById('no-results').classList.add('hidden');
-        }
-
-        function displayAvailableVehicles(vehicles) {
-            const container = document.getElementById('available-vehicles');
-            const grid = document.getElementById('available-grid');
+        function displaySearchResults(results) {
+            hideLoading();
+            document.getElementById('results-section').classList.remove('hidden');
             
-            grid.innerHTML = '';
-            
-            if (vehicles && vehicles.length > 0) {
-                vehicles.forEach(vehicle => {
-                    const card = createVehicleCard(vehicle, false);
-                    grid.appendChild(card);
-                });
-                container.classList.remove('hidden');
-            }
-        }
-
-        function displaySoonAvailableVehicles(vehicles) {
-            const container = document.getElementById('soon-available-vehicles');
-            const grid = document.getElementById('soon-available-grid');
-            
-            grid.innerHTML = '';
-            
-            if (vehicles && vehicles.length > 0) {
-                vehicles.forEach(vehicle => {
-                    const card = createVehicleCard(vehicle, true);
-                    grid.appendChild(card);
-                });
-                container.classList.remove('hidden');
+            const availableContainer = document.getElementById('available-vehicles');
+            const availableGrid = document.getElementById('available-grid');
+            availableGrid.innerHTML = '';
+            if (results.available && results.available.length > 0) {
+                results.available.forEach(vehicle => availableGrid.appendChild(createVehicleCard(vehicle, false, false))); // Not featured, not soon
+                availableContainer.classList.remove('hidden');
             }
 
-            // Mostrar mensaje de no resultados si no hay vehículos disponibles ni pronto disponibles
-            const hasAvailable = !document.getElementById('available-vehicles').classList.contains('hidden');
-            const hasSoon = !container.classList.contains('hidden');
-            
-            if (!hasAvailable && !hasSoon) {
+            const soonContainer = document.getElementById('soon-available-vehicles');
+            const soonGrid = document.getElementById('soon-available-grid');
+            soonGrid.innerHTML = '';
+            if (results.soon && results.soon.length > 0) {
+                results.soon.forEach(vehicle => soonGrid.appendChild(createVehicleCard(vehicle, false, true))); // Not featured, soon
+                soonContainer.classList.remove('hidden');
+            }
+
+            if ((!results.available || results.available.length === 0) && (!results.soon || results.soon.length === 0)) {
                 document.getElementById('no-results').classList.remove('hidden');
             }
         }
-
-        function createVehicleCard(vehicle, isSoon = false) {
+        
+        // MODIFICACIÓN: Añadido parámetro isFeatured a createVehicleCard
+        function createVehicleCard(vehicle, isFeatured = false, isSoon = false) {
             const card = document.createElement('div');
             card.className = 'vehicle-card';
             if (isSoon) card.classList.add('soon-available');
+            if (isFeatured) card.classList.add('featured-small-card'); // Nueva clase para estilos específicos
+            
             const imageUrl = vehicle.IMAGEN_URL || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
             const price = vehicle.TARIFA ? `$${parseFloat(vehicle.TARIFA).toFixed(2)}` : 'Consultar precio';
             const year = vehicle['AÑO'] || vehicle.ANO || '';
             
-            card.innerHTML = `
-                <div class="vehicle-image">
-                    <img src="${imageUrl}" alt="${vehicle.NOMBRE}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
-                    ${isSoon ? '<div class="soon-badge">Próximamente</div>' : ''}
-                </div>
-                <div class="vehicle-info">
-                    <h4 class="vehicle-name">${vehicle.NOMBRE}</h4>
-                    <div class="vehicle-meta">
-                        <div class="vehicle-type"><i class="fas fa-tag"></i> ${vehicle.TIPO}</div>
-                        ${year ? `<div class="vehicle-year"><i class="fas fa-calendar-alt"></i> ${year}</div>` : ''}
+            if (isFeatured) {
+                // Estructura para tarjetas destacadas más pequeñas
+                card.innerHTML = `
+                    <div class="vehicle-image">
+                        <img src="${imageUrl}" alt="${vehicle.NOMBRE}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
                     </div>
-                    <div class="vehicle-price">
-                        <span class="price">${price}</span>
-                        <span class="price-period">por día</span>
+                    <div class="vehicle-info">
+                        <h4 class="vehicle-name">${vehicle.NOMBRE}</h4>
+                        <div class="vehicle-meta">
+                            ${year ? `<div class="vehicle-year"><i class="fas fa-calendar-alt"></i> ${year}</div>` : ''}
+                        </div>
+                        <div class="vehicle-price">
+                            <span class="price">${price}</span>
+                            <span class="price-period">por día</span>
+                        </div>
+                    </div>`;
+            } else {
+                // Estructura original para tarjetas de búsqueda y próximamente
+                card.innerHTML = `
+                    <div class="vehicle-image">
+                        <img src="${imageUrl}" alt="${vehicle.NOMBRE}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
+                        ${isSoon ? '<div class="soon-badge">Próximamente</div>' : ''}
                     </div>
-                    <button class="btn-details" onclick='openVehicleModal(${JSON.stringify(vehicle).replace(/"/g, "&quot;")})'>
-                        <i class="fas fa-eye"></i> Ver detalles
-                    </button>
-                </div>`;
+                    <div class="vehicle-info">
+                        <h4 class="vehicle-name">${vehicle.NOMBRE}</h4>
+                        <div class="vehicle-meta">
+                            <div class="vehicle-type"><i class="fas fa-tag"></i> ${vehicle.TIPO}</div>
+                            ${year ? `<div class="vehicle-year"><i class="fas fa-calendar-alt"></i> ${year}</div>` : ''}
+                        </div>
+                        <div class="vehicle-price">
+                            <span class="price">${price}</span>
+                            <span class="price-period">por día</span>
+                        </div>
+                        <button class="btn-details" onclick='openVehicleModal(${JSON.stringify(vehicle).replace(/"/g, "&quot;")})'>
+                            <i class="fas fa-eye"></i> Ver detalles
+                        </button>
+                    </div>`;
+            }
             return card;
         }
 
-        function loadVehicleTypes() {
-
-console.log('Cargando tipos de vehículos...');
-
-google.script.run
-
-.withSuccessHandler(function(types) {
-
-console.log('Tipos de vehículos cargados:', types);
-
-vehicleTypes = types;
-
-populateVehicleTypeSelect();
-
-})
-
-.withFailureHandler(function(error) {
-
-console.error('Error cargando tipos de vehículos:', error);
-
-showError('Error cargando tipos de vehículos');
-
-// Cargar tipos por defecto
-
-vehicleTypes = ['SEDAN', 'PICK UP', 'SUV'];
-
-populateVehicleTypeSelect();
-
-})
-
-.getVehicleTypes();
-
-}
-
-        function openVehicleModal(cod, vehicleData) {
-            console.log('Abriendo modal para vehículo:', cod);
+        function openVehicleModal(vehicleData) {
             currentVehicle = vehicleData;
-            
-            // Actualizar información básica del modal
             document.getElementById('modal-vehicle-name').textContent = vehicleData.NOMBRE || 'Vehículo';
             document.getElementById('modal-vehicle-type').textContent = vehicleData.TIPO || '-';
             document.getElementById('modal-vehicle-year').textContent = vehicleData['AÑO'] || vehicleData.ANO || '-';
             document.getElementById('modal-vehicle-color').textContent = vehicleData.COLOR || '-';
             document.getElementById('modal-vehicle-marca').textContent = vehicleData.MARCA || '-';
-            document.getElementById('modal-vehicle-placa').textContent = vehicleData['N. DE PLACA'] || '-';
             document.getElementById('modal-vehicle-deducible').textContent = vehicleData.DEDUCIBLE ? `$${vehicleData.DEDUCIBLE}` : '-';
-            
             const price = vehicleData.TARIFA ? `$${parseFloat(vehicleData.TARIFA).toFixed(2)}` : 'Consultar precio';
             document.getElementById('modal-vehicle-price').textContent = price;
-            
             const mainImage = vehicleData.IMAGEN_URL || 'https://via.placeholder.com/400x300?text=Sin+Imagen';
             document.getElementById('modal-main-image').src = mainImage;
-            
-            // Actualizar resumen de reserva
             updateReservationSummary();
-            
-            // Cargar galería de fotos
-            loadVehiclePhotos(cod, mainImage);
-            
-            // Mostrar modal
+            loadVehiclePhotos(vehicleData.COD, mainImage);
             document.getElementById('vehicle-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
         function loadVehiclePhotos(vehicleCode, mainImage) {
-            console.log('Cargando fotos para vehículo:', vehicleCode);
             google.script.run
-                .withSuccessHandler(function(photos) {
-                    console.log('Fotos cargadas:', photos.length);
-                    const allPhotos = [mainImage];
-                    photos.forEach(photo => {
-                        if (photo && photo !== mainImage) {
-                            allPhotos.push(photo);
-                        }
-                    });
+                .withSuccessHandler(photos => {
+                    const allPhotos = [mainImage, ...photos.filter(p => p && p !== mainImage)];
                     displayVehicleGallery(allPhotos);
                 })
-                .withFailureHandler(function(error) {
-                    console.error('Error cargando fotos:', error);
+                .withFailureHandler(error => {
+                    console.error('Error cargando galería:', error);
                     displayVehicleGallery([mainImage]);
                 })
                 .getVehiclePhotos(vehicleCode);
@@ -696,75 +384,26 @@ populateVehicleTypeSelect();
         function displayVehicleGallery(photos) {
             const thumbsContainer = document.getElementById('gallery-thumbs');
             thumbsContainer.innerHTML = '';
-            
             if (photos.length > 1) {
                 photos.forEach((photo, index) => {
                     const thumb = document.createElement('img');
                     thumb.src = photo;
                     thumb.className = 'gallery-thumb';
-                    thumb.onerror = function() {
-                        this.style.display = 'none';
-                    };
+                    thumb.onerror = function() { this.style.display = 'none'; };
                     if (index === 0) thumb.classList.add('active');
-                    
                     thumb.addEventListener('click', function() {
                         document.getElementById('modal-main-image').src = photo;
                         document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
                         thumb.classList.add('active');
                     });
-                    
                     thumbsContainer.appendChild(thumb);
                 });
             }
         }
-
-        function updateReservationSummary() {
-            if (!currentStartDate || !currentEndDate || !currentVehicle) return;
-            
-            const startDate = new Date(currentStartDate);
-            const endDate = new Date(currentEndDate);
-            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-            const dailyRate = parseFloat(currentVehicle.TARIFA) || 0;
-            const total = days * dailyRate;
-            
-            document.getElementById('summary-vehicle').textContent = currentVehicle.NOMBRE || 'Vehículo seleccionado';
-            document.getElementById('summary-start-date').textContent = formatDateForDisplay(startDate);
-            document.getElementById('summary-end-date').textContent = formatDateForDisplay(endDate);
-            document.getElementById('summary-days').textContent = days + (days === 1 ? ' día' : ' días');
-            document.getElementById('summary-total').textContent = dailyRate > 0 ? `$${total.toFixed(2)}` : 'Consultar precio';
-        }
-
-        function formatDateForDisplay(date) {
-            return date.toLocaleDateString('es-ES', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        function closeVehicleModal() {
-            document.getElementById('vehicle-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            
-            // Limpiar formulario
-            document.getElementById('reservation-form').reset();
-        }
-
-        function closeAllModals() {
-            closeVehicleModal();
-            closeSuccessModal();
-            closeErrorModal();
-        }
-
+        
         function submitReservation(event) {
             event.preventDefault();
-            
-            if (!currentVehicle) {
-                showError('Error: información del vehículo no disponible');
-                return;
-            }
-            
+            if (!currentVehicle) return;
             const formData = {
                 nombre: document.getElementById('cliente-nombre').value.trim(),
                 telefono: document.getElementById('cliente-telefono').value.trim(),
@@ -775,60 +414,98 @@ populateVehicleTypeSelect();
                 tipoVehiculo: currentVehicle.TIPO,
                 vehiculoCod: currentVehicle.COD
             };
-            
-            // Validar campos requeridos
             if (!formData.nombre || !formData.telefono || !formData.licencia) {
-                showError('Por favor completa todos los campos requeridos');
+                showError('Por favor completa todos los campos requeridos.');
                 return;
             }
-            
-            // Validar formato de teléfono (básico)
-            if (formData.telefono.length < 8) {
-                showError('Por favor ingresa un número de teléfono válido');
-                return;
-            }
-            
-            console.log('Enviando solicitud de reserva:', formData);
-            
-            // Deshabilitar botón de envío
             const submitBtn = event.target.querySelector('button[type="submit"]');
             const originalContent = submitBtn.innerHTML;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando solicitud...';
-            
-            // Enviar solicitud
-            google.script.run
-                .withSuccessHandler(function(result) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalContent;
-                    
-                    if (result.success) {
-                        console.log('Reserva guardada exitosamente:', result.id);
-                        closeVehicleModal();
-                        showSuccessModal(result.id);
-                    } else {
-                        console.error('Error en respuesta del servidor:', result.error);
-                        showError('Error guardando la reserva: ' + (result.error || 'Error desconocido'));
-                    }
-                })
-                .withFailureHandler(function(error) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalContent;
-                    console.error('Error enviando reserva:', error);
-                    showError('Error enviando la solicitud. Por favor verifica tu conexión e intenta nuevamente.');
-                })
-                .saveReservationRequest(formData);
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            google.script.run.withSuccessHandler(result => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                if (result.success) {
+                    closeVehicleModal();
+                    showSuccessModal(result.id);
+                } else {
+                    showError('Error al guardar: ' + (result.error || 'Desconocido'));
+                }
+            }).withFailureHandler(error => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                showError('Error de comunicación al enviar. Intenta de nuevo.');
+            }).saveReservationRequest(formData);
+        }
+
+        function setDefaultDates() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const startInput = document.getElementById('fecha-inicio');
+            const endInput = document.getElementById('fecha-fin');
+            startInput.value = formatDateForInput(today);
+            endInput.value = formatDateForInput(tomorrow);
+            startInput.min = formatDateForInput(today);
+            endInput.min = formatDateForInput(tomorrow);
+        }
+
+        function formatDateForInput(date) { return date.toISOString().split('T')[0]; }
+
+        function setupDateValidation() {
+            const startInput = document.getElementById('fecha-inicio');
+            const endInput = document.getElementById('fecha-fin');
+            startInput.addEventListener('change', function() {
+                const startDate = new Date(this.value);
+                const newMinEndDate = new Date(startDate);
+                newMinEndDate.setDate(newMinEndDate.getDate() + 1);
+                endInput.min = formatDateForInput(newMinEndDate);
+                if (new Date(endInput.value) <= startDate) {
+                    endInput.value = formatDateForInput(newMinEndDate);
+                }
+            });
+        }
+
+        function showLoading() { document.getElementById('loading').classList.remove('hidden'); }
+        function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
+        function hideResults() {
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('available-vehicles').classList.add('hidden');
+            document.getElementById('soon-available-vehicles').classList.add('hidden');
+            document.getElementById('no-results').classList.add('hidden');
+        }
+
+        function handleSearchError(error) {
+            console.error('Error en búsqueda:', error);
+            showError('Ocurrió un error al buscar. Por favor, intenta de nuevo.');
+            hideLoading();
+        }
+
+        function updateReservationSummary() {
+            if (!currentStartDate || !currentEndDate || !currentVehicle) return;
+            const startDate = new Date(currentStartDate), endDate = new Date(currentEndDate);
+            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) || 1;
+            const dailyRate = parseFloat(currentVehicle.TARIFA) || 0;
+            const total = days * dailyRate;
+            document.getElementById('summary-vehicle').textContent = currentVehicle.NOMBRE;
+            document.getElementById('summary-start-date').textContent = formatDateForDisplay(startDate);
+            document.getElementById('summary-end-date').textContent = formatDateForDisplay(endDate);
+            document.getElementById('summary-days').textContent = `${days} día(s)`;
+            document.getElementById('summary-total').textContent = dailyRate > 0 ? `$${total.toFixed(2)}` : 'Consultar';
+        }
+
+        function formatDateForDisplay(date) { return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }); }
+        
+        function closeVehicleModal() {
+            document.getElementById('vehicle-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('reservation-form').reset();
         }
 
         function showSuccessModal(reservationId) {
             document.getElementById('reservation-id').textContent = reservationId;
             document.getElementById('success-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            
-            // Auto-cerrar después de 10 segundos
-            setTimeout(function() {
-                closeSuccessModal();
-            }, 10000);
         }
 
         function closeSuccessModal() {
@@ -837,7 +514,6 @@ populateVehicleTypeSelect();
         }
 
         function showError(message) {
-            console.error('Error mostrado al usuario:', message);
             document.getElementById('error-message').textContent = message;
             document.getElementById('error-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -848,193 +524,11 @@ populateVehicleTypeSelect();
             document.body.style.overflow = 'auto';
         }
 
-        // Función para manejar errores de imágenes
-        function handleImageError(img) {
-            img.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';
-            img.onerror = null;
+        function closeAllModals() {
+            closeVehicleModal();
+            closeSuccessModal();
+            closeErrorModal();
         }
-
-        // Función para formatear números de teléfono
-        function formatPhoneNumber(input) {
-            let value = input.value.replace(/\D/g, '');
-            
-            // Formato para números de El Salvador
-            if (value.startsWith('503')) {
-                value = value.substring(3);
-            }
-            
-            if (value.length >= 8) {
-                value = value.substring(0, 4) + '-' + value.substring(4, 8);
-            }
-            
-            input.value = value;
-        }
-
-        // Aplicar formato de teléfono en tiempo real
-        document.addEventListener('DOMContentLoaded', function() {
-            const phoneInput = document.getElementById('cliente-telefono');
-            if (phoneInput) {
-                phoneInput.addEventListener('input', function() {
-                    formatPhoneNumber(this);
-                });
-                
-                phoneInput.addEventListener('keydown', function(e) {
-                    // Permitir backspace, delete, tab, escape, enter
-                    if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
-                        // Permitir Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                        (e.keyCode === 65 && e.ctrlKey === true) ||
-                        (e.keyCode === 67 && e.ctrlKey === true) ||
-                        (e.keyCode === 86 && e.ctrlKey === true) ||
-                        (e.keyCode === 88 && e.ctrlKey === true) ||
-                        // Permitir home, end, left, right
-                        (e.keyCode >= 35 && e.keyCode <= 39)) {
-                        return;
-                    }
-                    // Asegurar que solo sean números
-                    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                        e.preventDefault();
-                    }
-                });
-            }
-        });
-
-        // Función para limpiar formularios
-        function clearForm(formId) {
-            const form = document.getElementById(formId);
-            if (form) {
-                form.reset();
-            }
-        }
-
-        // Función para validar formulario
-        function validateReservationForm() {
-            const nombre = document.getElementById('cliente-nombre').value.trim();
-            const telefono = document.getElementById('cliente-telefono').value.trim();
-            const licencia = document.getElementById('cliente-licencia').value.trim();
-            
-            const errors = [];
-            
-            if (!nombre || nombre.length < 2) {
-                errors.push('El nombre debe tener al menos 2 caracteres');
-            }
-            
-            if (!telefono || telefono.length < 8) {
-                errors.push('El teléfono debe tener al menos 8 dígitos');
-            }
-            
-            if (!licencia || licencia.length < 5) {
-                errors.push('El número de licencia debe tener al menos 5 caracteres');
-            }
-            
-            return errors;
-        }
-
-        // Prevenir envío de formulario con errores
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('reservation-form');
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    const errors = validateReservationForm();
-                    if (errors.length > 0) {
-                        e.preventDefault();
-                        showError('Errores en el formulario:\n• ' + errors.join('\n• '));
-                        return false;
-                    }
-                });
-            }
-        });
-
-        // Función para detectar dispositivos móviles
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
-
-        // Optimizaciones para móvil
-        document.addEventListener('DOMContentLoaded', function() {
-            if (isMobileDevice()) {
-                // Ajustar tamaños para móvil
-                document.body.classList.add('mobile-device');
-                
-                // Mejorar experiencia táctil
-                const buttons = document.querySelectorAll('button, .btn-details');
-                buttons.forEach(button => {
-                    button.style.minHeight = '44px';
-                });
-            }
-        });
-
-        // Función para copiar ID de reserva
-        function copyReservationId() {
-            const idElement = document.getElementById('reservation-id');
-            if (idElement) {
-                const text = idElement.textContent;
-                
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(text).then(function() {
-                        // Mostrar feedback visual
-                        const originalText = idElement.innerHTML;
-                        idElement.innerHTML = '<i class="fas fa-check"></i> Copiado';
-                        setTimeout(function() {
-                            idElement.innerHTML = originalText;
-                        }, 2000);
-                    });
-                } else {
-                    // Fallback para navegadores más antiguos
-                    const textArea = document.createElement('textarea');
-                    textArea.value = text;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    
-                    const originalText = idElement.innerHTML;
-                    idElement.innerHTML = '<i class="fas fa-check"></i> Copiado';
-                    setTimeout(function() {
-                        idElement.innerHTML = originalText;
-                    }, 2000);
-                }
-            }
-        }
-
-        // Hacer que el ID de reserva sea clicable para copiar
-        document.addEventListener('DOMContentLoaded', function() {
-            const reservationIdElement = document.getElementById('reservation-id');
-            if (reservationIdElement) {
-                reservationIdElement.style.cursor = 'pointer';
-                reservationIdElement.title = 'Hacer clic para copiar';
-                reservationIdElement.addEventListener('click', copyReservationId);
-            }
-        });
-
-        // Manejar redimensionamiento de ventana
-        window.addEventListener('resize', function() {
-            // Ajustar modales si están abiertos
-            const openModal = document.querySelector('.modal:not(.hidden)');
-            if (openModal) {
-                const modalContent = openModal.querySelector('.modal-content');
-                if (modalContent) {
-                    modalContent.style.maxHeight = (window.innerHeight * 0.9) + 'px';
-                }
-            }
-        });
-
-        // Función de debug para desarrollo
-        function debugInfo() {
-            console.log('=== DEBUG INFO ===');
-            console.log('Current Vehicle:', currentVehicle);
-            console.log('Current Dates:', { start: currentStartDate, end: currentEndDate });
-            console.log('Vehicle Types:', vehicleTypes);
-            console.log('User Agent:', navigator.userAgent);
-            console.log('Screen Size:', { width: screen.width, height: screen.height });
-            console.log('Window Size:', { width: window.innerWidth, height: window.innerHeight });
-        }
-
-        // Exponer función de debug globalmente
-        window.debugInfo = debugInfo;
-
-        // Log inicial para confirmar que el script se cargó
-        console.log('Aplicación de Renta de Vehículos cargada correctamente');
-        console.log('Para información de debug, ejecuta: debugInfo()');
     </script>
 </body>
 </html>

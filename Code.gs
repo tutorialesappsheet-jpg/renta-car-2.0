@@ -1,5 +1,5 @@
 // ID de tu Google Sheets (reemplazar con tu ID real)
-const SPREADSHEET_ID = 'TU_SPREADSHEET_ID_AQUI';
+const SPREADSHEET_ID = '11GGfaORm90GmwcNtc5fj1dVtBNWygkwlXWZep3FuG8I';
 
 // IDs de las carpetas de Google Drive para imágenes (pre-configurados)
 const DRIVE_FOLDERS = {

@@ -183,6 +183,22 @@
     </div>
 
     <script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbwwCRJaHxIJBcOklGRJGexCEBqcU3fXTIpJR6Vu9qzWdCMda-XWewKdU21gbBIO60VS9g/exec";
+
+async function callAppsScript(functionName, params = {}) {
+    const response = await fetch(API_URL, {
+        method: 'POST',
+        redirect: "follow", // Importante para manejar redirecciones de Apps Script
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ functionName, ...params })
+    });
+    if (!response.ok) {
+        throw new Error(`Error en la llamada a la API: ${response.statusText}`);
+    }
+    return response.json();
+}
+        
         // Variables globales
         let currentVehicle = null;
         let currentStartDate = null;
@@ -190,11 +206,12 @@
 
         document.addEventListener('DOMContentLoaded', initializeApp);
 
-        function initializeApp() {
-            google.script.run
-                .withSuccessHandler(setupPage)
-                .withFailureHandler(handleInitError)
-                .getInitialData();
+ async function initializeApp() {
+    try {
+        const data = await callAppsScript('getInitialData');
+        setupPage(data);
+    } catch (error) {
+        handleInitError(error);
             setupEventListeners();
             setDefaultDates();
             setupDateValidation();
@@ -250,28 +267,29 @@
             document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
         }
 
-        function searchVehicles() {
-            const startDate = document.getElementById('fecha-inicio').value;
-            const endDate = document.getElementById('fecha-fin').value;
-            const selectedTypeBtn = document.querySelector('#tipo-vehiculo-btns .type-btn.active');
-            const vehicleType = selectedTypeBtn ? selectedTypeBtn.dataset.type : 'TODOS';
-            
-            if (!startDate || !endDate || new Date(endDate) <= new Date(startDate)) {
-                showError('Por favor, selecciona un rango de fechas válido.');
-                return;
-            }
-            currentStartDate = startDate;
-            currentEndDate = endDate;
-            
-            showLoading();
-            hideResults();
+async function searchVehicles() {
+    const startDate = document.getElementById('fecha-inicio').value;
+    const endDate = document.getElementById('fecha-fin').value;
+    const selectedTypeBtn = document.querySelector('#tipo-vehiculo-btns .type-btn.active');
+    const vehicleType = selectedTypeBtn ? selectedTypeBtn.dataset.type : 'TODOS';
+    
+    if (!startDate || !endDate || new Date(endDate) <= new Date(startDate)) {
+        showError('Por favor, selecciona un rango de fechas válido.');
+        return;
+    }
+    currentStartDate = startDate;
+    currentEndDate = endDate;
+    
+    showLoading();
+    hideResults();
 
-            // CORRECCIÓN: Llamada única al backend para la búsqueda
-            google.script.run
-                .withSuccessHandler(displaySearchResults)
-                .withFailureHandler(handleSearchError)
-                .performSearch(startDate, endDate, vehicleType);
-        }
+    try {
+        const results = await callAppsScript('performSearch', { startDate, endDate, vehicleType });
+        displaySearchResults(results);
+    } catch (error) {
+        handleSearchError(error);
+    }
+}
 
         function displaySearchResults(results) {
             hideLoading();
@@ -368,18 +386,16 @@
             document.body.style.overflow = 'hidden';
         }
 
-        function loadVehiclePhotos(vehicleCode, mainImage) {
-            google.script.run
-                .withSuccessHandler(photos => {
-                    const allPhotos = [mainImage, ...photos.filter(p => p && p !== mainImage)];
-                    displayVehicleGallery(allPhotos);
-                })
-                .withFailureHandler(error => {
-                    console.error('Error cargando galería:', error);
-                    displayVehicleGallery([mainImage]);
-                })
-                .getVehiclePhotos(vehicleCode);
-        }
+async function loadVehiclePhotos(vehicleCode, mainImage) {
+    try {
+        const photos = await callAppsScript('getVehiclePhotos', { vehicleCode });
+        const allPhotos = [mainImage, ...photos.filter(p => p && p !== mainImage)];
+        displayVehicleGallery(allPhotos);
+    } catch (error) {
+        console.error('Error cargando galería:', error);
+        displayVehicleGallery([mainImage]); // Muestra solo la principal si hay un error
+    }
+}
 
         function displayVehicleGallery(photos) {
             const thumbsContainer = document.getElementById('gallery-thumbs');
@@ -401,42 +417,44 @@
             }
         }
         
-        function submitReservation(event) {
-            event.preventDefault();
-            if (!currentVehicle) return;
-            const formData = {
-                nombre: document.getElementById('cliente-nombre').value.trim(),
-                telefono: document.getElementById('cliente-telefono').value.trim(),
-                licencia: document.getElementById('cliente-licencia').value.trim(),
-                comentarios: document.getElementById('cliente-comentarios').value.trim(),
-                fechaInicio: currentStartDate,
-                fechaFin: currentEndDate,
-                tipoVehiculo: currentVehicle.TIPO,
-                vehiculoCod: currentVehicle.COD
-            };
-            if (!formData.nombre || !formData.telefono || !formData.licencia) {
-                showError('Por favor completa todos los campos requeridos.');
-                return;
-            }
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalContent = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-            google.script.run.withSuccessHandler(result => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalContent;
-                if (result.success) {
-                    closeVehicleModal();
-                    showSuccessModal(result.id);
-                } else {
-                    showError('Error al guardar: ' + (result.error || 'Desconocido'));
-                }
-            }).withFailureHandler(error => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalContent;
-                showError('Error de comunicación al enviar. Intenta de nuevo.');
-            }).saveReservationRequest(formData);
+async function submitReservation(event) {
+    event.preventDefault();
+    if (!currentVehicle) return;
+    const formData = {
+        nombre: document.getElementById('cliente-nombre').value.trim(),
+        telefono: document.getElementById('cliente-telefono').value.trim(),
+        licencia: document.getElementById('cliente-licencia').value.trim(),
+        comentarios: document.getElementById('cliente-comentarios').value.trim(),
+        fechaInicio: currentStartDate,
+        fechaFin: currentEndDate,
+        tipoVehiculo: currentVehicle.TIPO,
+        vehiculoCod: currentVehicle.COD
+    };
+    if (!formData.nombre || !formData.telefono || !formData.licencia) {
+        showError('Por favor completa todos los campos requeridos.');
+        return;
+    }
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    
+    try {
+        const result = await callAppsScript('saveReservationRequest', { formData });
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+        if (result.success) {
+            closeVehicleModal();
+            showSuccessModal(result.id);
+        } else {
+            showError('Error al guardar: ' + (result.error || 'Desconocido'));
         }
+    } catch (error) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+        showError('Error de comunicación al enviar. Intenta de nuevo.');
+    }
+}
 
         function setDefaultDates() {
             const today = new Date();

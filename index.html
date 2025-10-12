@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renta de Vehículos</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+<link type="text/css" rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+    <!-- Loading Inicial -->
+    <div id="initial-loading" class="initial-loading">
+        <div class="spinner-modern"></div>
+        <p>Cargando información...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="main-header"></header>
+
+    <!-- Featured Slider -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="featured-slider" id="featured-slider"></div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h2 class="hero-title">¿Necesitas un Vehículo?</h2>
+                    <p class="hero-subtitle">Encuentra el vehículo perfecto para tu viaje. Rápido, fácil y confiable.</p>
+                </div>
+            </section>
+
+            <!-- Search Panel -->
+            <section class="search-panel-improved">
+                <div class="search-header">
+                    <h3>
+                        <i class="fas fa-search"></i>
+                        Busca tu Vehículo Ideal
+                    </h3>
+                    <p>Selecciona tus fechas y el tipo de vehículo que prefieres</p>
+                </div>
+                
+                <div class="search-form-improved">
+                    <div class="date-inputs">
+                        <div class="form-group-improved">
+                            <label for="fecha-inicio">
+                                <i class="fas fa-calendar-alt"></i>
+                                Fecha de inicio
+                            </label>
+                            <input type="date" id="fecha-inicio" required>
+                        </div>
+                        
+                        <div class="form-group-improved">
+                            <label for="fecha-fin">
+                                <i class="fas fa-calendar-alt"></i>
+                                Fecha de regreso
+                            </label>
+                            <input type="date" id="fecha-fin" required>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-types-section">
+                        <label class="types-label">
+                            <i class="fas fa-car"></i>
+                            Tipo de vehículo
+                        </label>
+                        <div class="vehicle-types-buttons" id="vehicle-types-container"></div>
+                    </div>
+                    
+                    <div class="search-button-container">
+                        <button id="btn-buscar" class="btn-search-improved">
+                            <i class="fas fa-search"></i>
+                            <span>Buscar Vehículos</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner-modern"></div>
+                <p>Buscando los mejores vehículos para ti...</p>
+            </div>
+
+            <!-- Results -->
+            <section class="results-section">
+                <div id="available-vehicles" class="vehicles-section hidden">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-check-circle"></i>
+                            Vehículos Disponibles
+                        </h3>
+                        <p>Perfectos para tus fechas seleccionadas</p>
+                    </div>
+                    <div id="available-grid" class="vehicles-grid-improved"></div>
+                </div>
+
+                <div id="soon-available-vehicles" class="vehicles-section hidden">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Disponibles Próximamente
+                        </h3>
+                        <p class="soon-available-note">
+                            Estos vehículos se liberarán en los próximos 5 días después de tu fecha de regreso
+                        </p>
+                    </div>
+                    <div id="soon-available-grid" class="vehicles-grid-improved"></div>
+                </div>
+
+                <div id="no-results" class="no-results-improved hidden">
+                    <div class="no-results-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No encontramos vehículos disponibles</h3>
+                    <p>Intenta con fechas diferentes o revisa los vehículos que se liberarán próximamente</p>
+                    <button onclick="clearSearch()" class="btn-try-again">
+                        <i class="fas fa-redo"></i>
+                        Intentar nueva búsqueda
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Vehículo -->
+    <div id="vehicle-modal" class="modal hidden">
+        <div class="modal-content-improved">
+            <div class="modal-header-improved">
+                <div class="modal-title-section">
+                    <h3 id="modal-vehicle-name"></h3>
+                    <div class="vehicle-badges">
+                        <span class="badge-type" id="modal-vehicle-type-badge"></span>
+                        <span class="badge-year" id="modal-vehicle-year-badge"></span>
+                    </div>
+                </div>
+                <button id="modal-close" class="modal-close-improved">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body-improved">
+                <div class="vehicle-showcase">
+                    <div class="vehicle-gallery-improved">
+                        <div id="main-image-container-improved">
+                            <img id="modal-main-image" src="" alt="">
+                        </div>
+                        <div id="gallery-thumbs-improved" class="gallery-thumbs-improved"></div>
+                    </div>
+                    
+                    <div class="vehicle-info-improved">
+                        <div class="price-display">
+                            <span class="price-amount" id="modal-vehicle-price">$0.00</span>
+                            <span class="price-period">por día</span>
+                        </div>
+                        
+                        <div class="vehicle-details-improved">
+                            <div class="detail-row">
+                                <i class="fas fa-tag"></i>
+                                <span>Tipo:</span>
+                                <span id="modal-vehicle-type">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Año:</span>
+                                <span id="modal-vehicle-year">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-palette"></i>
+                                <span>Color:</span>
+                                <span id="modal-vehicle-color">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-building"></i>
+                                <span>Marca:</span>
+                                <span id="modal-vehicle-marca">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Deducible:</span>
+                                <span id="modal-vehicle-deducible">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reservation-form-improved">
+                    <div class="form-header">
+                        <h4>
+                            <i class="fas fa-paper-plane"></i>
+                            ¡Solicita tu Reserva Ahora!
+                        </h4>
+                        <p>Completa tus datos y nos contactaremos contigo pronto</p>
+                    </div>
+                    
+                    <form id="reservation-form">
+                        <div class="form-grid">
+                            <div class="form-group-modern">
+                                <label for="cliente-nombre">
+                                    <i class="fas fa-user"></i>
+                                    Nombre completo *
+                                </label>
+                                <input type="text" id="cliente-nombre" required placeholder="Tu nombre completo">
+                            </div>
+                            
+                            <div class="form-group-modern">
+                                <label for="cliente-telefono">
+                                    <i class="fas fa-phone"></i>
+                                    Teléfono *
+                                </label>
+                                <input type="tel" id="cliente-telefono" required placeholder="+503 1234-5678">
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="cliente-hora">
+                                    <i class="fas fa-clock"></i>
+                                    Hora de retiro *
+                                </label>
+                                <input type="time" id="cliente-hora" required>
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="cliente-licencia">
+                                    <i class="fas fa-id-card"></i>
+                                    Número de licencia *
+                                </label>
+                                <input type="text" id="cliente-licencia" required placeholder="Número de licencia">
+                            </div>
+
+                            <div class="form-group-modern full-width">
+                                <label for="cliente-comentarios">
+                                    <i class="fas fa-comment"></i>
+                                    Comentarios adicionales
+                                </label>
+                                <textarea id="cliente-comentarios" rows="3" placeholder="Solicitudes especiales (opcional)"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="reservation-summary-improved">
+                            <div class="summary-header">
+                                <h5>
+                                    <i class="fas fa-file-invoice"></i>
+                                    Resumen de tu Reserva
+                                </h5>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-row">
+                                    <span>Vehículo:</span>
+                                    <span id="summary-vehicle">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Desde:</span>
+                                    <span id="summary-start-date">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Hasta:</span>
+                                    <span id="summary-end-date">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Duración:</span>
+                                    <span id="summary-days">-</span>
+                                </div>
+                                <div class="summary-row total-row">
+                                    <span>Total Estimado:</span>
+                                    <span id="summary-total">-</span>
+                                  </div>
+                            </div>
+                            <div class="summary-note">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Precio estimado sujeto a confirmación final</span>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-reserve-improved">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Enviar Solicitud de Reserva</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop"></div>
+    </div>
+
+    <!-- Modal Success -->
+    <div id="success-modal" class="modal hidden">
+        <div class="modal-content success-modal">
+            <div class="success-animation">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <h3>¡Solicitud Enviada Exitosamente!</h3>
+            <p>Tu solicitud de reserva ha sido recibida. Te contactaremos pronto para confirmar todos los detalles.</p>
+            <div class="reservation-details">
+                <div class="detail-item">
+                    <span>ID de Solicitud:</span>
+                    <span id="reservation-id" class="reservation-id-clickable"></span>
+                </div>
+                <div class="contact-info">
+                    <p>También puedes contactarnos directamente:</p>
+                    <a href="#" id="success-phone-link" class="phone-link">
+                        <i class="fas fa-phone"></i>
+                        <span id="success-phone"></span>
+                    </a>
+                </div>
+            </div>
+            <button id="success-close" class="btn-primary">
+                <i class="fas fa-check"></i>
+                Perfecto, Entendido
+            </button>
+        </div>
+        <div class="modal-backdrop"></div>
+    </div>
+
+    <!-- Modal Error -->
+    <div id="error-modal" class="modal hidden">
+        <div class="modal-content error-modal">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Ups, algo salió mal</h3>
+            <p id="error-message">Ha ocurrido un error. Por favor intenta nuevamente.</p>
+            <button id="error-close" class="btn-secondary">
+                <i class="fas fa-redo"></i>
+                Intentar de Nuevo
+            </button>
+        </div>
+        <div class="modal-backdrop"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer" id="main-footer"></footer>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>

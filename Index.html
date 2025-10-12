@@ -5,156 +5,282 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Renta de Vehículos</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-   <link rel="stylesheet" href="styles.css">
-    
-    <style>
-        :root {
-            --primary-color: <?= empresa['COLOR HEXA'] || '#d15b1a' ?>;
-            --primary-dark: <?= empresa['COLOR HEXA'] ? empresa['COLOR HEXA'] + 'cc' : '#b8490f' ?>;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo-section">
-                    <div class="company-info">
-                        <h1 class="company-name"><?= empresa.NOMBRE || 'Renta de Vehículos' ?></h1>
-                        <p class="company-address"><?= empresa.DIRECCION || 'Dirección no disponible' ?></p>
-                    </div>
-                </div>
-                <div class="contact-info">
-                    <a href="tel:<?= empresa.TELEFONO ?>" class="phone-link">
-                        <i class="fas fa-phone"></i>
-                        <?= empresa.TELEFONO || 'Teléfono' ?>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Loading Inicial -->
+    <div id="initial-loading" class="initial-loading">
+        <div class="spinner-modern"></div>
+        <p>Cargando información...</p>
+    </div>
 
+    <!-- Header -->
+    <header class="header" id="main-header"></header>
+
+    <!-- Featured Slider -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="featured-slider" id="featured-slider"></div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <section id="featured-section" class="vehicles-section hidden">
-                <h3><i class="fas fa-star"></i> Vehículos Destacados</h3>
-                <div id="featured-grid" class="vehicles-grid">
-                    </div>
-            </section>
-            
+            <!-- Hero -->
             <section class="hero">
-                <h2>Encuentra tu vehículo ideal</h2>
-                <p>Consulta la disponibilidad y solicita tu reserva de manera fácil y rápida</p>
+                <div class="hero-content">
+                    <h2 class="hero-title">¿Necesitas un Vehículo?</h2>
+                    <p class="hero-subtitle">Encuentra el vehículo perfecto para tu viaje. Rápido, fácil y confiable.</p>
+                </div>
             </section>
 
-            <section class="search-panel">
-                <div class="search-form">
-                    <div class="form-group">
-                        <label for="fecha-inicio"><i class="fas fa-calendar-alt"></i> Fecha de inicio</label>
-                        <input type="date" id="fecha-inicio" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="fecha-fin"><i class="fas fa-calendar-alt"></i> Fecha de regreso</label>
-                        <input type="date" id="fecha-fin" required>
-                    </div>
-                    <div class="form-group vehicle-type-group">
-                        <label><i class="fas fa-car"></i> Tipo de vehículo</label>
-                        <div id="tipo-vehiculo-btns" class="type-buttons">
-                            <button class="type-btn active" data-type="TODOS">Todos</button>
+            <!-- Search Panel -->
+            <section class="search-panel-improved">
+                <div class="search-header">
+                    <h3>
+                        <i class="fas fa-search"></i>
+                        Busca tu Vehículo Ideal
+                    </h3>
+                    <p>Selecciona tus fechas y el tipo de vehículo que prefieres</p>
+                </div>
+                
+                <div class="search-form-improved">
+                    <div class="date-inputs">
+                        <div class="form-group-improved">
+                            <label for="fecha-inicio">
+                                <i class="fas fa-calendar-alt"></i>
+                                Fecha de inicio
+                            </label>
+                            <input type="date" id="fecha-inicio" required>
+                        </div>
+                        
+                        <div class="form-group-improved">
+                            <label for="fecha-fin">
+                                <i class="fas fa-calendar-alt"></i>
+                                Fecha de regreso
+                            </label>
+                            <input type="date" id="fecha-fin" required>
                         </div>
                     </div>
-                    <div class="form-group-btn">
-                      <button id="btn-buscar" class="btn-search"><i class="fas fa-search"></i> Buscar</button>
+                    
+                    <div class="vehicle-types-section">
+                        <label class="types-label">
+                            <i class="fas fa-car"></i>
+                            Tipo de vehículo
+                        </label>
+                        <div class="vehicle-types-buttons" id="vehicle-types-container"></div>
+                    </div>
+                    
+                    <div class="search-button-container">
+                        <button id="btn-buscar" class="btn-search-improved">
+                            <i class="fas fa-search"></i>
+                            <span>Buscar Vehículos</span>
+                        </button>
                     </div>
                 </div>
             </section>
 
+            <!-- Loading -->
             <div id="loading" class="loading hidden">
-                <div class="spinner"></div>
-                <p>Buscando vehículos disponibles...</p>
+                <div class="spinner-modern"></div>
+                <p>Buscando los mejores vehículos para ti...</p>
             </div>
 
-            <section id="results-section" class="results-section hidden">
+            <!-- Results -->
+            <section class="results-section">
                 <div id="available-vehicles" class="vehicles-section hidden">
-                    <h3><i class="fas fa-check-circle"></i> Vehículos Disponibles</h3>
-                    <div id="available-grid" class="vehicles-grid"></div>
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-check-circle"></i>
+                            Vehículos Disponibles
+                        </h3>
+                        <p>Perfectos para tus fechas seleccionadas</p>
+                    </div>
+                    <div id="available-grid" class="vehicles-grid-improved"></div>
                 </div>
 
                 <div id="soon-available-vehicles" class="vehicles-section hidden">
-                    <h3><i class="fas fa-clock"></i> Disponibles Próximamente</h3>
-                    <p class="soon-available-note">Estos vehículos se liberarán en los próximos 5 días después de tu fecha de regreso.</p>
-                    <div id="soon-available-grid" class="vehicles-grid"></div>
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Disponibles Próximamente
+                        </h3>
+                        <p class="soon-available-note">
+                            Estos vehículos se liberarán en los próximos 5 días después de tu fecha de regreso
+                        </p>
+                    </div>
+                    <div id="soon-available-grid" class="vehicles-grid-improved"></div>
                 </div>
 
-                <div id="no-results" class="no-results hidden">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <h3>No se encontraron vehículos</h3>
-                    <p>No hay vehículos que coincidan con tu búsqueda. Intenta con otras fechas.</p>
+                <div id="no-results" class="no-results-improved hidden">
+                    <div class="no-results-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No encontramos vehículos disponibles</h3>
+                    <p>Intenta con fechas diferentes o revisa los vehículos que se liberarán próximamente</p>
+                    <button onclick="clearSearch()" class="btn-try-again">
+                        <i class="fas fa-redo"></i>
+                        Intentar nueva búsqueda
+                    </button>
                 </div>
             </section>
         </div>
     </main>
 
+    <!-- Modal Vehículo -->
     <div id="vehicle-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-vehicle-name"></h3>
-                <button id="modal-close" class="modal-close"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="vehicle-details">
-                    <div class="vehicle-gallery">
-                        <div id="main-image-container"><img id="modal-main-image" src="" alt="Imagen principal del vehículo"></div>
-                        <div id="gallery-thumbs" class="gallery-thumbs"></div>
+        <div class="modal-content-improved">
+            <div class="modal-header-improved">
+                <div class="modal-title-section">
+                    <h3 id="modal-vehicle-name"></h3>
+                    <div class="vehicle-badges">
+                        <span class="badge-type" id="modal-vehicle-type-badge"></span>
+                        <span class="badge-year" id="modal-vehicle-year-badge"></span>
                     </div>
-                    <div class="vehicle-info">
-                        <div class="price-info">
-                            <span class="price" id="modal-vehicle-price">$0.00</span>
+                </div>
+                <button id="modal-close" class="modal-close-improved">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body-improved">
+                <div class="vehicle-showcase">
+                    <div class="vehicle-gallery-improved">
+                        <div id="main-image-container-improved">
+                            <img id="modal-main-image" src="" alt="">
+                        </div>
+                        <div id="gallery-thumbs-improved" class="gallery-thumbs-improved"></div>
+                    </div>
+                    
+                    <div class="vehicle-info-improved">
+                        <div class="price-display">
+                            <span class="price-amount" id="modal-vehicle-price">$0.00</span>
                             <span class="price-period">por día</span>
                         </div>
-                        <div class="vehicle-details-grid">
-                            <div class="detail-item"><i class="fas fa-tag"></i><span class="detail-label">Tipo:</span> <span id="modal-vehicle-type">-</span></div>
-                            <div class="detail-item"><i class="fas fa-calendar-alt"></i><span class="detail-label">Año:</span> <span id="modal-vehicle-year">-</span></div>
-                            <div class="detail-item"><i class="fas fa-palette"></i><span class="detail-label">Color:</span> <span id="modal-vehicle-color">-</span></div>
-                            <div class="detail-item"><i class="fas fa-building"></i><span class="detail-label">Marca:</span> <span id="modal-vehicle-marca">-</span></div>
-                            <div class="detail-item"><i class="fas fa-shield-alt"></i><span class="detail-label">Deducible:</span> <span id="modal-vehicle-deducible">-</span></div>
+                        
+                        <div class="vehicle-details-improved">
+                            <div class="detail-row">
+                                <i class="fas fa-tag"></i>
+                                <span>Tipo:</span>
+                                <span id="modal-vehicle-type">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Año:</span>
+                                <span id="modal-vehicle-year">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-palette"></i>
+                                <span>Color:</span>
+                                <span id="modal-vehicle-color">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-building"></i>
+                                <span>Marca:</span>
+                                <span id="modal-vehicle-marca">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Deducible:</span>
+                                <span id="modal-vehicle-deducible">-</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="reservation-form">
-                    <h4><i class="fas fa-paper-plane"></i> Completa tus Datos para Reservar</h4>
+
+                <div class="reservation-form-improved">
+                    <div class="form-header">
+                        <h4>
+                            <i class="fas fa-paper-plane"></i>
+                            ¡Solicita tu Reserva Ahora!
+                        </h4>
+                        <p>Completa tus datos y nos contactaremos contigo pronto</p>
+                    </div>
+                    
                     <form id="reservation-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="cliente-nombre"><i class="fas fa-user"></i> Nombre completo *</label>
-                                <input type="text" id="cliente-nombre" required placeholder="Ingresa tu nombre">
+                        <div class="form-grid">
+                            <div class="form-group-modern">
+                                <label for="cliente-nombre">
+                                    <i class="fas fa-user"></i>
+                                    Nombre completo *
+                                </label>
+                                <input type="text" id="cliente-nombre" required placeholder="Tu nombre completo">
                             </div>
-                            <div class="form-group">
-                                <label for="cliente-telefono"><i class="fas fa-phone"></i> Teléfono *</label>
-                                <input type="tel" id="cliente-telefono" required placeholder="Tu número de teléfono">
+                            
+                            <div class="form-group-modern">
+                                <label for="cliente-telefono">
+                                    <i class="fas fa-phone"></i>
+                                    Teléfono *
+                                </label>
+                                <input type="tel" id="cliente-telefono" required placeholder="+503 1234-5678">
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="cliente-hora">
+                                    <i class="fas fa-clock"></i>
+                                    Hora de retiro *
+                                </label>
+                                <input type="time" id="cliente-hora" required>
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="cliente-licencia">
+                                    <i class="fas fa-id-card"></i>
+                                    Número de licencia *
+                                </label>
+                                <input type="text" id="cliente-licencia" required placeholder="Número de licencia">
+                            </div>
+
+                            <div class="form-group-modern full-width">
+                                <label for="cliente-comentarios">
+                                    <i class="fas fa-comment"></i>
+                                    Comentarios adicionales
+                                </label>
+                                <textarea id="cliente-comentarios" rows="3" placeholder="Solicitudes especiales (opcional)"></textarea>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="cliente-licencia"><i class="fas fa-id-card"></i> Número de licencia *</label>
-                            <input type="text" id="cliente-licencia" required placeholder="Tu número de licencia">
+                        
+                        <div class="reservation-summary-improved">
+                            <div class="summary-header">
+                                <h5>
+                                    <i class="fas fa-file-invoice"></i>
+                                    Resumen de tu Reserva
+                                </h5>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-row">
+                                    <span>Vehículo:</span>
+                                    <span id="summary-vehicle">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Desde:</span>
+                                    <span id="summary-start-date">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Hasta:</span>
+                                    <span id="summary-end-date">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Duración:</span>
+                                    <span id="summary-days">-</span>
+                                </div>
+                                <div class="summary-row total-row">
+                                    <span>Total Estimado:</span>
+                                    <span id="summary-total">-</span>
+                                  </div>
+                            </div>
+                            <div class="summary-note">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Precio estimado sujeto a confirmación final</span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="cliente-comentarios"><i class="fas fa-comment"></i> Comentarios adicionales</label>
-                            <textarea id="cliente-comentarios" rows="3" placeholder="Solicitudes especiales (opcional)"></textarea>
-                        </div>
-                        <div class="reservation-summary">
-                            <h5><i class="fas fa-file-invoice"></i> Resumen de la reserva</h5>
-                            <div class="summary-item"><span>Vehículo:</span> <span id="summary-vehicle">-</span></div>
-                            <div class="summary-item"><span>Desde:</span> <span id="summary-start-date">-</span></div>
-                            <div class="summary-item"><span>Hasta:</span> <span id="summary-end-date">-</span></div>
-                            <div class="summary-item"><span>Días:</span> <span id="summary-days">-</span></div>
-                            <div class="summary-item total"><span>Total estimado:</span> <span id="summary-total">-</span></div>
-                        </div>
-                        <button type="submit" class="btn-reserve"><i class="fas fa-paper-plane"></i> Enviar Solicitud</button>
+                        
+                        <button type="submit" class="btn-reserve-improved">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Enviar Solicitud de Reserva</span>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -162,391 +288,57 @@
         <div class="modal-backdrop"></div>
     </div>
 
+    <!-- Modal Success -->
     <div id="success-modal" class="modal hidden">
         <div class="modal-content success-modal">
-            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
-            <h3>¡Solicitud Enviada!</h3>
-            <p>Hemos recibido tu solicitud. Nos pondremos en contacto contigo pronto para confirmar.</p>
-            <div class="reservation-id"><span>ID de solicitud: </span> <span id="reservation-id"></span></div>
-            <button id="success-close" class="btn-primary"><i class="fas fa-check"></i> Entendido</button>
+            <div class="success-animation">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <h3>¡Solicitud Enviada Exitosamente!</h3>
+            <p>Tu solicitud de reserva ha sido recibida. Te contactaremos pronto para confirmar todos los detalles.</p>
+            <div class="reservation-details">
+                <div class="detail-item">
+                    <span>ID de Solicitud:</span>
+                    <span id="reservation-id" class="reservation-id-clickable"></span>
+                </div>
+                <div class="contact-info">
+                    <p>También puedes contactarnos directamente:</p>
+                    <a href="#" id="success-phone-link" class="phone-link">
+                        <i class="fas fa-phone"></i>
+                        <span id="success-phone"></span>
+                    </a>
+                </div>
+            </div>
+            <button id="success-close" class="btn-primary">
+                <i class="fas fa-check"></i>
+                Perfecto, Entendido
+            </button>
         </div>
         <div class="modal-backdrop"></div>
     </div>
+
+    <!-- Modal Error -->
     <div id="error-modal" class="modal hidden">
         <div class="modal-content error-modal">
-            <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
-            <h3>Error</h3>
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Ups, algo salió mal</h3>
             <p id="error-message">Ha ocurrido un error. Por favor intenta nuevamente.</p>
-            <button id="error-close" class="btn-secondary"><i class="fas fa-times"></i> Cerrar</button>
+            <button id="error-close" class="btn-secondary">
+                <i class="fas fa-redo"></i>
+                Intentar de Nuevo
+            </button>
         </div>
         <div class="modal-backdrop"></div>
     </div>
 
-    <script>
+    <!-- Footer -->
+    <footer class="site-footer" id="main-footer"></footer>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbwwCRJaHxIJBcOklGRJGexCEBqcU3fXTIpJR6Vu9qzWdCMda-XWewKdU21gbBIO60VS9g/exec";
-
-async function callAppsScript(functionName, params = {}) {
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        redirect: "follow", // Importante para manejar redirecciones de Apps Script
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ functionName, ...params })
-    });
-    if (!response.ok) {
-        throw new Error(`Error en la llamada a la API: ${response.statusText}`);
-    }
-    return response.json();
-}
-        
-        // Variables globales
-        let currentVehicle = null;
-        let currentStartDate = null;
-        let currentEndDate = null;
-
-        document.addEventListener('DOMContentLoaded', initializeApp);
-
- async function initializeApp() {
-    try {
-        const data = await callAppsScript('getInitialData');
-        setupPage(data);
-    } catch (error) {
-        handleInitError(error);
-            setupEventListeners();
-            setDefaultDates();
-            setupDateValidation();
-        }
-
-        function setupPage(data) {
-            if (data.featuredVehicles && data.featuredVehicles.length > 0) {
-                populateFeaturedVehicles(data.featuredVehicles);
-            }
-            if (data.vehicleTypes && data.vehicleTypes.length > 0) {
-                populateVehicleTypeButtons(data.vehicleTypes);
-            }
-        }
-        
-        function handleInitError(error) {
-            console.error('Error al inicializar:', error);
-            showError('No se pudo cargar la configuración inicial.');
-        }
-
-        function populateFeaturedVehicles(vehicles) {
-            const container = document.getElementById('featured-section');
-            const grid = document.getElementById('featured-grid');
-            grid.innerHTML = '';
-            vehicles.forEach(vehicle => {
-                grid.appendChild(createVehicleCard(vehicle, false));
-            });
-            container.classList.remove('hidden');
-        }
-
-        function populateVehicleTypeButtons(types) {
-            const container = document.getElementById('tipo-vehiculo-btns');
-            types.forEach(type => {
-                const btn = document.createElement('button');
-                btn.className = 'type-btn';
-                btn.dataset.type = type;
-                btn.textContent = type;
-                container.appendChild(btn);
-            });
-            container.addEventListener('click', e => {
-                if (e.target.classList.contains('type-btn')) {
-                    container.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                }
-            });
-        }
-        function setupEventListeners() {
-            document.getElementById('btn-buscar').addEventListener('click', searchVehicles);
-            document.getElementById('modal-close').addEventListener('click', closeVehicleModal);
-            document.getElementById('reservation-form').addEventListener('submit', submitReservation);
-            document.getElementById('success-close').addEventListener('click', closeSuccessModal);
-            document.getElementById('error-close').addEventListener('click', closeErrorModal);
-            document.addEventListener('click', e => { if (e.target.classList.contains('modal-backdrop')) closeAllModals(); });
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
-        }
-
-async function searchVehicles() {
-    const startDate = document.getElementById('fecha-inicio').value;
-    const endDate = document.getElementById('fecha-fin').value;
-    const selectedTypeBtn = document.querySelector('#tipo-vehiculo-btns .type-btn.active');
-    const vehicleType = selectedTypeBtn ? selectedTypeBtn.dataset.type : 'TODOS';
-    
-    if (!startDate || !endDate || new Date(endDate) <= new Date(startDate)) {
-        showError('Por favor, selecciona un rango de fechas válido.');
-        return;
-    }
-    currentStartDate = startDate;
-    currentEndDate = endDate;
-    
-    showLoading();
-    hideResults();
-
-    try {
-        const results = await callAppsScript('performSearch', { startDate, endDate, vehicleType });
-        displaySearchResults(results);
-    } catch (error) {
-        handleSearchError(error);
-    }
-}
-
-        function displaySearchResults(results) {
-            hideLoading();
-            document.getElementById('results-section').classList.remove('hidden');
-            
-            const availableContainer = document.getElementById('available-vehicles');
-            const availableGrid = document.getElementById('available-grid');
-            availableGrid.innerHTML = '';
-            if (results.available && results.available.length > 0) {
-                results.available.forEach(vehicle => availableGrid.appendChild(createVehicleCard(vehicle, false, false))); // Not featured, not soon
-                availableContainer.classList.remove('hidden');
-            }
-
-            const soonContainer = document.getElementById('soon-available-vehicles');
-            const soonGrid = document.getElementById('soon-available-grid');
-            soonGrid.innerHTML = '';
-            if (results.soon && results.soon.length > 0) {
-                results.soon.forEach(vehicle => soonGrid.appendChild(createVehicleCard(vehicle, false, true))); // Not featured, soon
-                soonContainer.classList.remove('hidden');
-            }
-
-            if ((!results.available || results.available.length === 0) && (!results.soon || results.soon.length === 0)) {
-                document.getElementById('no-results').classList.remove('hidden');
-            }
-        }
-        
-        // MODIFICACIÓN: Añadido parámetro isFeatured a createVehicleCard
-        function createVehicleCard(vehicle, isFeatured = false, isSoon = false) {
-            const card = document.createElement('div');
-            card.className = 'vehicle-card';
-            if (isSoon) card.classList.add('soon-available');
-            if (isFeatured) card.classList.add('featured-small-card'); // Nueva clase para estilos específicos
-            
-            const imageUrl = vehicle.IMAGEN_URL || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
-            const price = vehicle.TARIFA ? `$${parseFloat(vehicle.TARIFA).toFixed(2)}` : 'Consultar precio';
-            const year = vehicle['AÑO'] || vehicle.ANO || '';
-            
-            if (isFeatured) {
-                // Estructura para tarjetas destacadas más pequeñas
-                card.innerHTML = `
-                    <div class="vehicle-image">
-                        <img src="${imageUrl}" alt="${vehicle.NOMBRE}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
-                    </div>
-                    <div class="vehicle-info">
-                        <h4 class="vehicle-name">${vehicle.NOMBRE}</h4>
-                        <div class="vehicle-meta">
-                            ${year ? `<div class="vehicle-year"><i class="fas fa-calendar-alt"></i> ${year}</div>` : ''}
-                        </div>
-                        <div class="vehicle-price">
-                            <span class="price">${price}</span>
-                            <span class="price-period">por día</span>
-                        </div>
-                    </div>`;
-            } else {
-                // Estructura original para tarjetas de búsqueda y próximamente
-                card.innerHTML = `
-                    <div class="vehicle-image">
-                        <img src="${imageUrl}" alt="${vehicle.NOMBRE}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
-                        ${isSoon ? '<div class="soon-badge">Próximamente</div>' : ''}
-                    </div>
-                    <div class="vehicle-info">
-                        <h4 class="vehicle-name">${vehicle.NOMBRE}</h4>
-                        <div class="vehicle-meta">
-                            <div class="vehicle-type"><i class="fas fa-tag"></i> ${vehicle.TIPO}</div>
-                            ${year ? `<div class="vehicle-year"><i class="fas fa-calendar-alt"></i> ${year}</div>` : ''}
-                        </div>
-                        <div class="vehicle-price">
-                            <span class="price">${price}</span>
-                            <span class="price-period">por día</span>
-                        </div>
-                        <button class="btn-details" onclick='openVehicleModal(${JSON.stringify(vehicle).replace(/"/g, "&quot;")})'>
-                            <i class="fas fa-eye"></i> Ver detalles
-                        </button>
-                    </div>`;
-            }
-            return card;
-        }
-
-        function openVehicleModal(vehicleData) {
-            currentVehicle = vehicleData;
-            document.getElementById('modal-vehicle-name').textContent = vehicleData.NOMBRE || 'Vehículo';
-            document.getElementById('modal-vehicle-type').textContent = vehicleData.TIPO || '-';
-            document.getElementById('modal-vehicle-year').textContent = vehicleData['AÑO'] || vehicleData.ANO || '-';
-            document.getElementById('modal-vehicle-color').textContent = vehicleData.COLOR || '-';
-            document.getElementById('modal-vehicle-marca').textContent = vehicleData.MARCA || '-';
-            document.getElementById('modal-vehicle-deducible').textContent = vehicleData.DEDUCIBLE ? `$${vehicleData.DEDUCIBLE}` : '-';
-            const price = vehicleData.TARIFA ? `$${parseFloat(vehicleData.TARIFA).toFixed(2)}` : 'Consultar precio';
-            document.getElementById('modal-vehicle-price').textContent = price;
-            const mainImage = vehicleData.IMAGEN_URL || 'https://via.placeholder.com/400x300?text=Sin+Imagen';
-            document.getElementById('modal-main-image').src = mainImage;
-            updateReservationSummary();
-            loadVehiclePhotos(vehicleData.COD, mainImage);
-            document.getElementById('vehicle-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-async function loadVehiclePhotos(vehicleCode, mainImage) {
-    try {
-        const photos = await callAppsScript('getVehiclePhotos', { vehicleCode });
-        const allPhotos = [mainImage, ...photos.filter(p => p && p !== mainImage)];
-        displayVehicleGallery(allPhotos);
-    } catch (error) {
-        console.error('Error cargando galería:', error);
-        displayVehicleGallery([mainImage]); // Muestra solo la principal si hay un error
-    }
-}
-
-        function displayVehicleGallery(photos) {
-            const thumbsContainer = document.getElementById('gallery-thumbs');
-            thumbsContainer.innerHTML = '';
-            if (photos.length > 1) {
-                photos.forEach((photo, index) => {
-                    const thumb = document.createElement('img');
-                    thumb.src = photo;
-                    thumb.className = 'gallery-thumb';
-                    thumb.onerror = function() { this.style.display = 'none'; };
-                    if (index === 0) thumb.classList.add('active');
-                    thumb.addEventListener('click', function() {
-                        document.getElementById('modal-main-image').src = photo;
-                        document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
-                        thumb.classList.add('active');
-                    });
-                    thumbsContainer.appendChild(thumb);
-                });
-            }
-        }
-        
-async function submitReservation(event) {
-    event.preventDefault();
-    if (!currentVehicle) return;
-    const formData = {
-        nombre: document.getElementById('cliente-nombre').value.trim(),
-        telefono: document.getElementById('cliente-telefono').value.trim(),
-        licencia: document.getElementById('cliente-licencia').value.trim(),
-        comentarios: document.getElementById('cliente-comentarios').value.trim(),
-        fechaInicio: currentStartDate,
-        fechaFin: currentEndDate,
-        tipoVehiculo: currentVehicle.TIPO,
-        vehiculoCod: currentVehicle.COD
-    };
-    if (!formData.nombre || !formData.telefono || !formData.licencia) {
-        showError('Por favor completa todos los campos requeridos.');
-        return;
-    }
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-    const originalContent = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-    
-    try {
-        const result = await callAppsScript('saveReservationRequest', { formData });
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalContent;
-        if (result.success) {
-            closeVehicleModal();
-            showSuccessModal(result.id);
-        } else {
-            showError('Error al guardar: ' + (result.error || 'Desconocido'));
-        }
-    } catch (error) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalContent;
-        showError('Error de comunicación al enviar. Intenta de nuevo.');
-    }
-}
-
-        function setDefaultDates() {
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const startInput = document.getElementById('fecha-inicio');
-            const endInput = document.getElementById('fecha-fin');
-            startInput.value = formatDateForInput(today);
-            endInput.value = formatDateForInput(tomorrow);
-            startInput.min = formatDateForInput(today);
-            endInput.min = formatDateForInput(tomorrow);
-        }
-
-        function formatDateForInput(date) { return date.toISOString().split('T')[0]; }
-
-        function setupDateValidation() {
-            const startInput = document.getElementById('fecha-inicio');
-            const endInput = document.getElementById('fecha-fin');
-            startInput.addEventListener('change', function() {
-                const startDate = new Date(this.value);
-                const newMinEndDate = new Date(startDate);
-                newMinEndDate.setDate(newMinEndDate.getDate() + 1);
-                endInput.min = formatDateForInput(newMinEndDate);
-                if (new Date(endInput.value) <= startDate) {
-                    endInput.value = formatDateForInput(newMinEndDate);
-                }
-            });
-        }
-
-        function showLoading() { document.getElementById('loading').classList.remove('hidden'); }
-        function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
-        function hideResults() {
-            document.getElementById('results-section').classList.add('hidden');
-            document.getElementById('available-vehicles').classList.add('hidden');
-            document.getElementById('soon-available-vehicles').classList.add('hidden');
-            document.getElementById('no-results').classList.add('hidden');
-        }
-
-        function handleSearchError(error) {
-            console.error('Error en búsqueda:', error);
-            showError('Ocurrió un error al buscar. Por favor, intenta de nuevo.');
-            hideLoading();
-        }
-
-        function updateReservationSummary() {
-            if (!currentStartDate || !currentEndDate || !currentVehicle) return;
-            const startDate = new Date(currentStartDate), endDate = new Date(currentEndDate);
-            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) || 1;
-            const dailyRate = parseFloat(currentVehicle.TARIFA) || 0;
-            const total = days * dailyRate;
-            document.getElementById('summary-vehicle').textContent = currentVehicle.NOMBRE;
-            document.getElementById('summary-start-date').textContent = formatDateForDisplay(startDate);
-            document.getElementById('summary-end-date').textContent = formatDateForDisplay(endDate);
-            document.getElementById('summary-days').textContent = `${days} día(s)`;
-            document.getElementById('summary-total').textContent = dailyRate > 0 ? `$${total.toFixed(2)}` : 'Consultar';
-        }
-
-        function formatDateForDisplay(date) { return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }); }
-        
-        function closeVehicleModal() {
-            document.getElementById('vehicle-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            document.getElementById('reservation-form').reset();
-        }
-
-        function showSuccessModal(reservationId) {
-            document.getElementById('reservation-id').textContent = reservationId;
-            document.getElementById('success-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('success-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function showError(message) {
-            document.getElementById('error-message').textContent = message;
-            document.getElementById('error-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeErrorModal() {
-            document.getElementById('error-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function closeAllModals() {
-            closeVehicleModal();
-            closeSuccessModal();
-            closeErrorModal();
-        }
-    </script>
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
 </body>
 </html>
